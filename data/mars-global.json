@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "mars-global",
+  "title": "Mars · global MOLA",
+  "width": 1440,
+  "height": 720,
+  "bounds": {
+    "west": 0,
+    "east": 360,
+    "north": 90,
+    "south": -90
+  },
+  "pixelsPerDegree": 4,
+  "routing": false,
+  "encoding": "int16-be",
+  "elevationUnit": "metre",
+  "radiusKm": 3396,
+  "noData": -32768,
+  "file": "mars-global.bin",
+  "sha256": "25f16fb7aaf857898dcf98bc4f841341a24f8b9f7e98453ca083bc45d897ca2c",
+  "source": {
+    "title": "NASA / MGS MOLA MEGDR",
+    "url": "https://pds-geosciences.wustl.edu/mgs/urn-nasa-pds-mgs_mola_topography_derived/meg004/megt90n000cb.img",
+    "labelUrl": "https://pds-geosciences.wustl.edu/mgs/urn-nasa-pds-mgs_mola_topography_derived/meg004/megt90n000cb.lbl",
+    "catalog": "https://pds-geosciences.wustl.edu/missions/mgs/megdr.html",
+    "productVersion": "2.0",
+    "coordinateSystem": "IAU2000 planetocentric, east-positive longitude",
+    "verticalDatum": "GMM3 areoid",
+    "processing": "Original 4 pixels/degree topography image; no resampling. Pixel coordinates refer to cell centers.",
+    "note": "Source includes interpolated bins; grid spacing is not guaranteed measured resolution. Not rover hazard data."
+  }
+}

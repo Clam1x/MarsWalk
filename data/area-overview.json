@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "width": 5280,
+  "height": 2616,
+  "sources": {
+    "hirise": {
+      "collection": "mro_hirise_socet_dtms",
+      "products": 1262,
+      "catalogue": "https://stac.astrogeology.usgs.gov/api/search",
+      "pngSha256": "9214770960fb5e3c506096daffb8bc1d29635be1291f154885a5b028398bccee",
+      "note": "Filled planet-scale DTM footprint guide; exact catalogue polygons load in close views. Footprints can contain invalid height cells, so route source colors may cover only part of a footprint."
+    },
+    "ctx": {
+      "collection": "mro_ctx_controlled_usgs_dtms",
+      "products": 44628,
+      "catalogue": "https://stac.astrogeology.usgs.gov/api/search",
+      "pngSha256": "27ecdcc2cc7b59dc94eeb985d070ae78f8e2aa19bd85510ac57944813c988c23",
+      "note": "Filled planet-scale DTM footprint guide; exact catalogue polygons load in close views. Footprints can contain invalid height cells, so route source colors may cover only part of a footprint."
+    }
+  }
+}

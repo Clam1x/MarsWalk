@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "id": "mars-routing",
+  "title": "All Mars · MOLA 16 px/° routing grid",
+  "width": 5760,
+  "height": 2880,
+  "bounds": {
+    "west": 0,
+    "east": 360,
+    "north": 90,
+    "south": -90
+  },
+  "pixelsPerDegree": 16,
+  "routing": true,
+  "encoding": "int16-le",
+  "elevationUnit": "metre",
+  "radiusKm": 3396,
+  "noData": -32768,
+  "sha256": "9fdb0ddd3db378678326f2f34ea2a8f9220ecd0a0bda3d51aa0d27ac0506cd17",
+  "parts": [
+    {
+      "file": "mars-routing-north.bin",
+      "bytes": 16588800,
+      "sha256": "1c2f9763c55dc90bb232ecca8d6f14f7217ad42fc5720956f89b9310d158d949"
+    },
+    {
+      "file": "mars-routing-south.bin",
+      "bytes": 16588800,
+      "sha256": "daba6d11eae2178c3d050b3b36010833ffcaba1c2089a61d4a1331cf553ec06d"
+    }
+  ],
+  "source": {
+    "title": "NASA / MGS MOLA MEGDR",
+    "url": "https://pds-geosciences.wustl.edu/mgs/urn-nasa-pds-mgs_mola_topography_derived/meg016/megt90n000eb.img",
+    "labelUrl": "https://pds-geosciences.wustl.edu/mgs/urn-nasa-pds-mgs_mola_topography_derived/meg016/megt90n000eb.lbl",
+    "sha256": "d18d9b9ab8c5516d02e157dd2cde0f1d0d160c21940e953ba22391269a545e7b",
+    "productVersion": "2.0",
+    "coordinateSystem": "IAU2000 planetocentric, east-positive longitude",
+    "verticalDatum": "GMM3 areoid",
+    "processing": "Exact 16 px/degree global source samples; byte order swapped only. No spatial resampling.",
+    "note": "Many bins without altimeter shots contain interpolated values. Grid spacing is not effective obstacle resolution."
+  }
+}

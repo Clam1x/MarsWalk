@@ -1,0 +1,8 @@
+node_modules/
+dist/
+work/
+audit/
+.openai/
+*.log
+.env
+.env.*

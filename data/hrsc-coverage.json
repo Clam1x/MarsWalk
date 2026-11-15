@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "width": 5280,
+  "height": 2616,
+  "bitOrder": "most-significant-first",
+  "longitudeDomain": "-180..180 east-positive",
+  "pdfMapFrame": [
+    96.241,
+    45.182,
+    1223.766,
+    608.893
+  ],
+  "source": "USGS HRSC Coverage Map v2",
+  "sourceUrl": "https://astrogeology.usgs.gov/ckan/dataset/6c177b5f-97af-4d70-adc3-92cf362b9890/resource/db5a4915-4820-45b2-9d94-2a37e322b291/download/hrsc_coveragemap_v2.pdf",
+  "sourceSha256": "63dabb03564337d35e912424e6995e7579728533ef14c4e826150a06f014810c",
+  "maskSha256": "80cdd76a36a8c2cd12caf092e471f4adcbab7cf7aca9b6a73455d81239aafc59",
+  "approxAreaFraction": 0.4463,
+  "note": "PDF map frame calibrated to 0\u2013360\u00b0 longitude and \u00b190\u00b0 latitude. Approximate footprint guide only; 5 km blended edges and unknown per-pixel source provenance."
+}

@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#171714"><meta name="description" content="Explore Mars and plan elevation-aware routes using the USGS HRSC/MOLA blended terrain model.">
+  <title>MarsWalk — Mars Atlas</title><link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header><a class="brand" href="./"><span class="planet" aria-hidden="true"></span>MARSWALK <small>MARS ATLAS</small></a><span class="edition">SURFACE EXPLORER</span><span id="dataBadge" class="badge">LOADING…</span></header>
+<main>
+  <aside>
+    <p class="eyebrow">THE WHOLE PLANET</p><h1>Mars.<br><em>Anywhere.</em></h1>
+    <p class="intro">Explore orbital imagery across Mars. Choose any two points and calculate a route from global elevation data.</p>
+    <p class="note">The map displays a bundled MOLA overview. Route calculations load real USGS HRSC/MOLA blend elevations for the selected corridor.</p>
+    <div class="divider"></div>
+    <div class="section-heading"><h2>Route planning</h2><span>ON FOOT</span></div>
+    <p id="routeHint" class="note">Pick start and destination anywhere on Mars, then calculate a route.</p>
+    <fieldset id="routeControls">
+      <legend class="sr-only">Route points and settings</legend>
+      <div class="point-buttons"><button id="pickStart" type="button" aria-pressed="false"><span class="start-dot">A</span> Pick start</button><button id="pickGoal" type="button" aria-pressed="false"><span class="end-dot">B</span> Pick destination</button></div>
+      <div class="coordinates"><div><small>START</small><output id="startCoord">—</output></div><div><small>DESTINATION</small><output id="endCoord">—</output></div></div>
+      <div class="label-row"><label for="slopeLimit">MAXIMUM SLOPE</label><output id="slopeOutput">12°</output></div>
+      <input id="slopeLimit" type="range" min="1" max="40" value="12" step="1">
+      <div class="label-row"><label for="riskWeight">AVOID STEEP GROUND</label><output id="riskOutput">60%</output></div>
+      <input id="riskWeight" type="range" min="0" max="100" value="60" step="5">
+      <label for="detailRequirement">REQUIRED ELEVATION GRID</label>
+      <select id="detailRequirement"><option value="any">Best practical detail</option><option value="4000">4 km or finer</option><option value="1000">1 km or finer</option><option value="200">200 m or finer</option><option value="20">20 m or finer</option><option value="1">1 m or finer</option></select>
+      <p class="note">The app checks for a numeric HiRISE or CTX DTM covering both endpoints. Otherwise it routes on the HRSC/MOLA blend and refines intersecting sections with available stereo DTMs. Long routes may need a wider base sampling step. A stricter requirement stops the calculation if unavailable across the full route.</p>
+      <div class="hazard-settings"><label for="vehicleRadius">WALKING CLEARANCE RADIUS <input id="vehicleRadius" type="number" min="0" max="50" step="0.5" value="1"> m</label><label for="crossSlopeLimit">MAX CROSS SLOPE <input id="crossSlopeLimit" type="number" min="1" max="40" step="1" value="12"> °</label><label for="stepLimit">MAX APPARENT STEP <input id="stepLimit" type="number" min="0.1" max="5" step="0.1" value="0.6"> m</label></div>
+      <p class="note">On native CTX/HiRISE terrain, the walking corridor checks measured forward and cross slope, apparent steps, missing cells and model edges. The step and clearance limits are adjustable assumptions; stereo noise can resemble a step, and features smaller than true DTM resolution remain unknown.</p>
+      <p class="note">Detailed stereo terrain is checked for topographic depressions near the route. Approximate circles are planning cues, not measured crater rims. Coarse global terrain cannot resolve walking-scale craters; no detection means no claim of clearance.</p>
+      <button id="calculateButton" class="primary" disabled>Calculate route ↗</button>
+      <button id="verifiedButton" class="verified-button" disabled>Find verified-data route ↗</button>
+      <p class="note">This stricter mode requires one continuous HiRISE stereo DTM at 2 m or finer, readable HiRISE imagery along the whole route, and evidence for pixel provenance and image–terrain agreement. Missing quality evidence blocks approval. These checks cannot certify that walking is safe.</p>
+      <button id="resetButton" class="text-button">Clear points</button>
+    </fieldset>
+    <p class="caution">The HRSC guide is approximate. MOLA-base areas are resampled to 200 m without gaining that level of detail. CTX and HiRISE catalogue outlines can contain missing heights; a model join does not prove the physical slope. Review the data quality of every route section before using it for field planning.</p>
+    <details><summary>Data sources</summary><p>Numeric route heights: <a href="https://astrogeology.usgs.gov/search/map/mars_mgs_mola_mex_hrsc_blended_dem_global_200m" target="_blank" rel="noreferrer">USGS HRSC/MOLA Blend DEM Global 200 m v2</a>, fetched as small byte ranges from the original GeoTIFF. For routes contained in a local stereo model, the app reads numeric <a href="https://stac.astrogeology.usgs.gov/docs/data/mars/ctxdtms/" target="_blank" rel="noreferrer">CTX DTMs</a> or <a href="https://stac.astrogeology.usgs.gov/docs/data/mars/hirise_dtms/" target="_blank" rel="noreferrer">HiRISE DTMs</a> from the USGS catalog. The preliminary global corridor and bundled overview use <a href="https://pds-geosciences.wustl.edu/missions/mgs/megdr.html" target="_blank" rel="noreferrer">NASA MOLA MEGDR</a>. The green area guide comes from the <a href="https://astrogeology.usgs.gov/ckan/dataset/6c177b5f-97af-4d70-adc3-92cf362b9890/resource/db5a4915-4820-45b2-9d94-2a37e322b291/download/hrsc_coveragemap_v2.pdf" target="_blank" rel="noreferrer">published HRSC footprint map</a>; it is not a per-pixel provenance mask.</p><p>Images: <a href="https://trek.nasa.gov/tiles/apidoc/trekAPI.html?body=mars" target="_blank" rel="noreferrer">NASA Mars Trek Viking VIS</a>, <a href="https://murray-lab.caltech.edu/CTX/" target="_blank" rel="noreferrer">Caltech global CTX mosaic</a>, and <a href="https://astro.arcgis.com/arcgis/rest/services/OnMars/HiRISE/MapServer?f=pjson" target="_blank" rel="noreferrer">HiRISE mosaic served by Esri</a>. Photographs never replace numeric heights.</p><p>Place search uses a small <a href="https://planetarynames.wr.usgs.gov/SearchResults?Target=20_Mars" target="_blank" rel="noreferrer">IAU / USGS</a> catalogue.</p></details>
+  </aside>
+  <section class="explorer" aria-label="Mars map and route analysis">
+    <div class="searchbar"><form id="searchForm"><label class="sr-only" for="searchInput">Place name or coordinates</label><span aria-hidden="true">⌕</span><input id="searchInput" placeholder="Olympus Mons or 15.4, 131.7" autocomplete="off"><button type="submit">Find ↗</button></form><button id="globalButton">All Mars</button></div>
+    <div class="map-toolbar"><div class="layers" role="group" aria-label="Map layer"><button data-layer="terrain" aria-pressed="true">Relief</button><button data-layer="elevation" aria-pressed="false">Elevation</button><button data-layer="slope" aria-pressed="false">Slope</button><button data-layer="geology" aria-pressed="false">Geology</button><span class="layer-separator" aria-hidden="true"></span><button data-layer="viking" aria-pressed="false">Viking VIS</button><button data-layer="ctx" aria-pressed="false">CTX</button><button data-layer="hirise" aria-pressed="false">HiRISE</button></div><span id="resolution">Best available route DEM</span></div>
+    <div class="coverage-toolbar"><span class="coverage-key"><i class="key-hrsc"></i>HRSC guide <i class="key-mola"></i>MOLA base <i class="key-ctx"></i>CTX extent <i class="key-hirise"></i>HiRISE extent</span><div class="coverage-actions"><label for="showDepressions" class="labels-toggle"><input id="showDepressions" type="checkbox" checked> Terrain depressions</label><label for="mapLabels" class="labels-toggle"><input id="mapLabels" type="checkbox" checked> Map labels</label><label for="coverageFilter">Show areas <select id="coverageFilter"><option value="all">All sources</option><option value="hrsc">HRSC guide</option><option value="mola">MOLA base</option><option value="ctx">CTX DTM extent</option><option value="hirise">HiRISE DTM extent</option><option value="none">No areas</option></select></label></div></div>
+    <div id="areaStatus" class="area-status" role="status" aria-live="polite">HRSC/MOLA source guide · approximate</div>
+    <div id="imageryStatus" class="imagery-status"><span id="imageryInfo" role="status" aria-live="polite">Explore planet-wide imagery. Route heights use MOLA.</span><label id="opacityControl" for="imageryOpacity" hidden><span id="opacityLabel">Image opacity</span> <input id="imageryOpacity" type="range" min="0" max="100" value="85" step="5"><output id="opacityValue">85%</output></label></div>
+    <div id="geologyInfo" class="geology-info" hidden><strong>USGS global geologic map · SIM 3292</strong><span id="geologyAtCursor">Hover over the map to identify a mapped geologic unit.</span><a href="https://pubs.usgs.gov/sim/3292/pdf/sim3292_map.pdf" target="_blank" rel="noreferrer">Full map legend ↗</a><small>Colors show regional mapped units; lines and labels are embedded in the published map. This layer is not a height or mineral map. Route calculation still uses numeric terrain data.</small></div>
+    <div class="map-wrap" id="mapWrap">
+      <canvas id="terrainCanvas" tabindex="0" role="img" aria-label="Mars map. Arrow keys pan, plus and minus zoom. Use Pick start and Pick destination to choose route points anywhere on Mars."></canvas>
+      <div class="north" aria-hidden="true">N<br>↑</div>
+      <div class="map-controls"><button id="zoomIn" aria-label="Zoom in">+</button><button id="zoomOut" aria-label="Zoom out">−</button><button id="fitMap" aria-label="Fit planet">⌖</button></div>
+      <div id="mapTooltip" class="tooltip" hidden></div>
+      <div class="map-footer"><span id="scale"></span><span id="mapPosition">Drag to pan · scroll or use +/− to zoom</span></div>
+      <div id="loading" class="loading">Loading Mars overview…</div>
+    </div>
+    <div class="legend-row"><span id="legend"></span><span id="zoomLabel">1.0×</span></div>
+    <div id="notice" role="status" aria-live="polite">Choose a start and destination anywhere on Mars.</div>
+    <section class="analysis" aria-label="Route analysis"><div class="section-heading"><h2>Elevation profile</h2><span id="routeStatus">CHOOSE POINTS</span></div>
+      <div class="metrics"><div><small>DISTANCE</small><strong id="distanceMetric">—</strong></div><div><small>MEASURED ELEVATION GAIN</small><strong id="gainMetric">—</strong></div><div><small>MAX MEASURED SLOPE</small><strong id="maxSlopeMetric">—</strong></div><div><small>EXPLORED CELLS</small><strong id="nodesMetric">—</strong></div></div>
+      <div id="routeQuality" class="quality-card" role="status" aria-live="polite">Route data quality will appear here after calculation.</div>
+      <div id="hazardStatus" class="hazard-card" role="status" aria-live="polite">The terrain depression survey starts with a detailed route calculation. An empty result never certifies a safe route.</div>
+      <div class="segment-heading"><h3>Route source sections</h3><label for="segmentSort">Sort <select id="segmentSort"><option value="along">Along route</option><option value="source">Source</option><option value="length">Longest first</option></select></label></div><div id="routeSegments" class="route-segments"><p class="note">Calculate a route to see where the source changes.</p></div>
+      <canvas id="profileCanvas" role="img" aria-label="Elevation along route"></canvas><p id="profileCaption" class="note">Calculate a route to see its elevation profile.</p>
+    </section>
+    <section class="eva-panel" aria-labelledby="evaHeading">
+      <div class="section-heading"><h2 id="evaHeading">Science &amp; survival plan</h2><span>CREW INPUTS</span></div>
+      <div class="eva-modes" role="group" aria-label="Planning mode"><button id="evaStandard" type="button" aria-pressed="true">Standard walk A → B</button><button id="evaScience" type="button" aria-pressed="false">Science expedition from A</button></div>
+      <p id="evaModeHint" class="note">Estimate travel from A to B. Enter your mission's own limits; these figures are not measured by MarsWalk.</p>
+      <div class="eva-grid">
+        <label for="evaSpeed">WALKING SPEED <span>km/h</span><input id="evaSpeed" type="number" min="0.1" max="20" step="0.1" value="2"></label>
+        <label for="evaSlowdown">EXTRA TIME AT 12° SLOPE <span>%</span><input id="evaSlowdown" type="number" min="0" max="300" step="5" value="50"></label>
+        <label for="evaReserve">RESOURCE RESERVE <span>%</span><input id="evaReserve" type="number" min="0" max="99" step="1" value="20"></label>
+        <label for="evaDeparture">DEPARTURE <span>UTC</span><input id="evaDeparture" type="datetime-local"></label>
+      </div>
+      <label class="eva-check" for="evaReturn"><input id="evaReturn" type="checkbox" checked> Return to start along the same route</label>
+      <div class="eva-grid eva-budgets">
+        <label for="evaOxygen">OXYGEN AVAILABLE <span>hours</span><input id="evaOxygen" type="number" min="0" step="0.1" placeholder="Enter hours"></label>
+        <label for="evaPower">SUIT POWER AVAILABLE <span>hours</span><input id="evaPower" type="number" min="0" step="0.1" placeholder="Enter hours"></label>
+        <label for="evaWater">COOLING WATER AVAILABLE <span>hours</span><input id="evaWater" type="number" min="0" step="0.1" placeholder="Enter hours"></label>
+        <label for="evaLimit">EVA TIME LIMIT <span>hours</span><input id="evaLimit" type="number" min="0" step="0.1" placeholder="Enter hours"></label>
+      </div>
+      <div id="scienceControls" hidden><h3>Science target</h3><p class="note">Set only A. MarsWalk searches mapped structures, contacts, craters and different geologic units around it. If none is close enough, it will not invent a science target. Global geology is regional (1:20 million scale); every proposal needs image and terrain review. The return follows the same route.</p><button id="sciencePlanFromA" type="button" disabled>Find mapped science targets from A ↗</button><div id="scienceTargets" class="science-targets" role="status" aria-live="polite"><p class="note">Choose A to search for nearby science targets.</p></div><div class="eva-grid"><label for="evaTargetObjective">TARGET OBJECTIVE<input id="evaTargetObjective" type="text" maxlength="80" value="Survey target B"></label><label for="evaTargetMinutes">WORK AT B <span>minutes</span><input id="evaTargetMinutes" type="number" min="0" max="1440" step="1" value="30"></label></div>
+        <div class="science-heading"><h3>Additional science stops</h3><button id="evaSuggestStops" type="button" disabled>Check mapped unit contacts ↗</button></div>
+        <div class="eva-stop-inputs"><label for="evaSection">ROUTE SECTION<select id="evaSection" disabled><option>Calculate a route first</option></select></label><label for="evaObjective">OBJECTIVE<input id="evaObjective" type="text" maxlength="80" placeholder="e.g. sample site"></label><label for="evaMinutes">WORK TIME <span>minutes</span><input id="evaMinutes" type="number" min="1" max="1440" step="1" value="20"></label><button id="evaAddStop" type="button" disabled>Add stop +</button></div>
+        <div id="evaStops" class="eva-stops"><p class="note">No additional science stops yet.</p></div>
+      </div>
+      <details class="eva-conditions"><summary>Mission forecast and communications assumptions</summary><p class="note">There is no validated live, surface-level temperature, wind, dust and radiation feed for every point on Mars. <a href="https://www-mars.lmd.jussieu.fr/mcd_python/" target="_blank" rel="noreferrer">Mars Climate Database</a> provides global model climatology, not a dated local forecast; <a href="https://pds-atmospheres.nmsu.edu/data_and_services/atmospheres_data/PERSEVERANCE/meda.html" target="_blank" rel="noreferrer">MEDA</a> provides historical measurements at the rover. Enter a mission forecast or measured scenario with its source; blank fields remain unknown. Direct radio range includes planetary curvature only.</p>
+        <div class="eva-grid eva-budgets"><label for="evaTempMin">AIR TEMPERATURE MIN <span>°C</span><input id="evaTempMin" type="number" step="1" placeholder="Forecast"></label><label for="evaTempMax">AIR TEMPERATURE MAX <span>°C</span><input id="evaTempMax" type="number" step="1" placeholder="Forecast"></label><label for="evaSuitTempMin">SUIT LIMIT MIN <span>°C</span><input id="evaSuitTempMin" type="number" step="1" placeholder="Mission limit"></label><label for="evaSuitTempMax">SUIT LIMIT MAX <span>°C</span><input id="evaSuitTempMax" type="number" step="1" placeholder="Mission limit"></label>
+          <label for="evaRadRate">RADIATION RATE <span>mSv/h</span><input id="evaRadRate" type="number" min="0" step="0.01" placeholder="Forecast"></label><label for="evaDoseLimit">DOSE LIMIT <span>mSv</span><input id="evaDoseLimit" type="number" min="0" step="0.01" placeholder="Mission limit"></label><label for="evaWind">WIND SPEED <span>m/s</span><input id="evaWind" type="number" min="0" step="0.1" placeholder="Forecast"></label><label for="evaWindLimit">WIND LIMIT <span>m/s</span><input id="evaWindLimit" type="number" min="0" step="0.1" placeholder="Mission limit"></label>
+          <label for="evaDust">DUST OPTICAL DEPTH <span>τ</span><input id="evaDust" type="number" min="0" step="0.01" placeholder="Forecast"></label><label for="evaDustLimit">DUST LIMIT <span>τ</span><input id="evaDustLimit" type="number" min="0" step="0.01" placeholder="Mission limit"></label><label for="evaRadioRange">RADIO RANGE <span>km</span><input id="evaRadioRange" type="number" min="0" step="0.1" placeholder="Hardware"></label><label for="evaBaseAntenna">BASE ANTENNA <span>m high</span><input id="evaBaseAntenna" type="number" min="0" step="0.1" placeholder="Antenna"></label><label for="evaSuitAntenna">SUIT ANTENNA <span>m high</span><input id="evaSuitAntenna" type="number" min="0" step="0.1" placeholder="Antenna"></label></div>
+      </details>
+      <div id="evaResult" class="eva-result" role="status" aria-live="polite">Calculate a route to estimate walking time and add science stops.</div>
+      <p class="note eva-limit-note">Slope slowdown is a planning assumption, not a calibrated EVA performance model. Geometric sunlight follows <a href="https://www.giss.nasa.gov/tools/mars24/help/algorithm.html" target="_blank" rel="noreferrer">NASA Mars24</a> and excludes terrain shadows and dust. Weather, temperature and radiation use crew-entered values; direct radio geometry excludes terrain and relay schedules. Review route quality and terrain depressions separately.</p>
+    </section>
+  </section>
+</main>
+<footer><span>MARSWALK / SURFACE EXPLORER</span><span>USGS HRSC/MOLA numeric heights load on demand · image layers load from public map services</span></footer>
+<script type="module" src="src/app.js"></script>
+</body></html>
